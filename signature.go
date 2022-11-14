@@ -111,7 +111,9 @@ func (sig signature) Check() error {
 	return nil
 }
 
-// Signature
+// Signature contains the fields of an OpenSSH SSHSIG Signature, as read
+// from the underlying wire data. All of the fields of this struct are
+// user-provided and not safe to consider trusted without other verification.
 type Signature struct {
 	// Version is the major version of the SSHSIG protocol. Currently, only
 	// Version 1 is supported; any other version is not understood
@@ -135,6 +137,7 @@ type Signature struct {
 	Signature *ssh.Signature
 }
 
+// Marshal will encode the Signature into the SSHSIG Wire format.
 func (sig Signature) Marshal() []byte {
 	return ssh.Marshal(signature{
 		Magic:         MagicPreamble,
