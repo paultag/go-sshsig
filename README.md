@@ -1,5 +1,9 @@
 # pault.ag/go/sshsig - sign data using OpenSSH
 
+[![GoDoc](https://godoc.org/pault.ag/go/sshsig?status.svg)](https://godoc.org/pault.ag/go/sshsig)
+
+[![Go Report Card](https://goreportcard.com/badge/pault.ag/go/sshsig)](https://goreportcard.com/report/pault.ag/go/sshsig)
+
 OpenSSH supports a new [SSHSIG](https://github.com/openssh/openssh-portable/blob/master/PROTOCOL.sshsig)
 format, which allows for the signing of any data using an OpenSSH key.
 
