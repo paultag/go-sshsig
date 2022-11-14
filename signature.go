@@ -207,7 +207,7 @@ func (sd signedData) Marshal() []byte {
 	})
 }
 
-// Verify will check that the OpenSSH SSHSIG Siganture is valid given the
+// Verify will check that the OpenSSH SSHSIG Signature is valid given the
 // data hash, hash algorith, and namespace.
 //
 // This function expects that the HashAlgo is passed explicitly -- even though
