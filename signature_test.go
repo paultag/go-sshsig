@@ -141,9 +141,15 @@ nobody inspects the spamish repetition
 				cPub, cPriv, err := key.New()
 				assert.NoError(t, err)
 
+				dPub, _, err := key.New()
+				assert.NoError(t, err)
+
 				pub, err := ssh.NewPublicKey(cPub)
 				assert.NoError(t, err)
 				priv, err := ssh.NewSignerFromSigner(cPriv)
+				assert.NoError(t, err)
+
+				pub2, err := ssh.NewPublicKey(dPub)
 				assert.NoError(t, err)
 
 				namespace := []byte("pault.ag/go/sshsig.test")
@@ -162,6 +168,11 @@ nobody inspects the spamish repetition
 				sig, err = sshsig.ParseSignature(sigB)
 				assert.NoError(t, err)
 				assert.Error(t, sshsig.Verify(pub, namespace, algo, hash, sig))
+
+				// Now, let's check a signature against an unknown key.
+				sig, err = sshsig.ParseSignature(sigB)
+				assert.NoError(t, err)
+				assert.Error(t, sshsig.Verify(pub2, namespace, algo, hash, sig))
 			})
 		}
 	}

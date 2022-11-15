@@ -227,7 +227,7 @@ func Verify(
 		HashAlgorithm: string(hashAlgo),
 		Hash:          hash,
 	}.Marshal()
-	return sig.PublicKey.Verify(message, sig.Signature)
+	return pub.Verify(message, sig.Signature)
 }
 
 // Sign will create an OpenSSH SSHSIG format Signature in the provdied namespace,
