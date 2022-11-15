@@ -167,6 +167,7 @@ nobody inspects the spamish repetition
 				// Now, let's check a bad namespace (and therefore signature).
 				sigB, err = sshsig.Sign(rand.Reader, priv,
 					[]byte("pault.ag/go/sshsig.invalid"), algo, hash)
+				assert.NoError(t, err)
 				sig, err = sshsig.ParseSignature(sigB)
 				assert.NoError(t, err)
 
