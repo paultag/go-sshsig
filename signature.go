@@ -210,9 +210,10 @@ func (sd signedData) Marshal() []byte {
 // Verify will check that the OpenSSH SSHSIG Signature is valid given the
 // data hash, hash algorith, and namespace.
 //
-// This function expects that the HashAlgo is passed explicitly -- even though
-// the Signature type also includes the HashAlgo, just for explicit
-// re-confirmation that the passed Hash is of that type.
+// This function expects that the data from the Signature is passed
+// explicitly -- even though the Signature type also includes the Namespace,
+// HashAlgo, and PublicKey, passing them in here ensures that the values
+// of the Signature are confirmed totally during validation.
 //
 // This will only verify an SSHSIG v1 signature.
 func Verify(
@@ -222,9 +223,17 @@ func Verify(
 	hash []byte,
 	sig *Signature,
 ) error {
-	// Check the Public Key early to provide a better error.
+	// Check the Public Key early to provide a better error. This isn't
+	// actually a security feature, since the provided PublicKey is used,
+	// even after we believe they match by checking their SHA256 hash.
 	if ssh.FingerprintSHA256(pub) != ssh.FingerprintSHA256(sig.PublicKey) {
 		return fmt.Errorf("sshsig: provided Public Key didn't sign this data.")
+	}
+
+	// If the HashAlgorithm provided doesn't match the Signature's
+	// HashAlgorithm, we shouldn't go forward.
+	if hashAlgo != sig.HashAlgorithm {
+		return fmt.Errorf("sshsig: provided HashAlgorithm doesn't match Signature")
 	}
 
 	message := signedData{

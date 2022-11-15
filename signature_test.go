@@ -164,6 +164,18 @@ nobody inspects the spamish repetition
 				// Now, let's check a good signature against an unknown key.
 				assert.Error(t, sshsig.Verify(pub2, namespace, algo, hash, sig))
 
+				// Check a bad Hash Algorithm
+				switch algo {
+				case sshsig.HashAlgoSHA256:
+					assert.Error(t, sshsig.Verify(pub, namespace,
+						sshsig.HashAlgoSHA512, hash, sig))
+				case sshsig.HashAlgoSHA512:
+					assert.Error(t, sshsig.Verify(pub, namespace,
+						sshsig.HashAlgoSHA256, hash, sig))
+				default:
+					assert.False(t, true)
+				}
+
 				// Now, let's check a bad namespace (and therefore signature).
 				sigB, err = sshsig.Sign(rand.Reader, priv,
 					[]byte("pault.ag/go/sshsig.invalid"), algo, hash)
