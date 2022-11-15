@@ -140,17 +140,17 @@ nobody inspects the spamish repetition
 			t.Run(fmt.Sprintf("%s-%s", algo, key.Name), func(t *testing.T) {
 				cPub, cPriv, err := key.New()
 				assert.NoError(t, err)
-
-				dPub, _, err := key.New()
-				assert.NoError(t, err)
-
 				pub, err := ssh.NewPublicKey(cPub)
 				assert.NoError(t, err)
 				priv, err := ssh.NewSignerFromSigner(cPriv)
 				assert.NoError(t, err)
 
-				pub2, err := ssh.NewPublicKey(dPub)
+				cPub2, _, err := key.New()
 				assert.NoError(t, err)
+				pub2, err := ssh.NewPublicKey(cPub2)
+				assert.NoError(t, err)
+				// Just for the sake of clairty here.
+				assert.False(t, ssh.FingerprintSHA256(pub) == ssh.FingerprintSHA256(pub2))
 
 				namespace := []byte("pault.ag/go/sshsig.test")
 
@@ -161,18 +161,17 @@ nobody inspects the spamish repetition
 				assert.NoError(t, err)
 				assert.NoError(t, sshsig.Verify(pub, namespace, algo, hash, sig))
 
+				// Now, let's check a good signature against an unknown key.
+				assert.Error(t, sshsig.Verify(pub2, namespace, algo, hash, sig))
+
 				// Now, let's check a bad namespace (and therefore signature).
 				sigB, err = sshsig.Sign(rand.Reader, priv,
 					[]byte("pault.ag/go/sshsig.invalid"), algo, hash)
-				assert.NoError(t, err)
 				sig, err = sshsig.ParseSignature(sigB)
 				assert.NoError(t, err)
-				assert.Error(t, sshsig.Verify(pub, namespace, algo, hash, sig))
 
-				// Now, let's check a signature against an unknown key.
-				sig, err = sshsig.ParseSignature(sigB)
-				assert.NoError(t, err)
-				assert.Error(t, sshsig.Verify(pub2, namespace, algo, hash, sig))
+				// Check that there's an error when we use a different Namespace
+				assert.Error(t, sshsig.Verify(pub, namespace, algo, hash, sig))
 			})
 		}
 	}

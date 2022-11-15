@@ -222,6 +222,11 @@ func Verify(
 	hash []byte,
 	sig *Signature,
 ) error {
+	// Check the Public Key early to provide a better error.
+	if ssh.FingerprintSHA256(pub) != ssh.FingerprintSHA256(sig.PublicKey) {
+		return fmt.Errorf("sshsig: provided Public Key didn't sign this data.")
+	}
+
 	message := signedData{
 		Namespace:     namespace,
 		HashAlgorithm: string(hashAlgo),
